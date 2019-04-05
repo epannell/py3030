@@ -1,0 +1,37 @@
+AI Pseudocode
+keep track of:
+	played cards
+	for given suit
+		if spade has been played
+			trump is broken
+		if ace is played
+			if king is played
+				if queen is played
+					jack is high card
+				else
+					queen is high card
+			else
+				king is high card
+		else
+			ace is high card
+		if >=8 cards played in suit or someone has played trump on that suit:
+			assume someone is out of that suit
+if trump is broken: 
+	can examine spades
+do you have high card in a suit: 
+	is anyone out of that suit:
+		look at next suit
+	else:
+		play high card
+else:
+	find suit with fewest cards:
+		do you have card >= 10?
+			play lowest of cards >= 10
+		else:
+			play low card
+	
+
+
+		
+	
+		
