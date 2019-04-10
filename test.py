@@ -56,6 +56,7 @@ class Player:   # player object. has a hand, score, bid, tricks, name, card on t
         self.score = 0  # total score for game
         self.bid = 0    # bid for hand
         self.tricks = 0 # tricks taken
+        self.bags = 0 # bags taken
         self.name = name    # player id
         self.cardOnTable = Card(0, 'none')  # blank card until another is played
         self.turnOrder = order  # order of play
@@ -115,13 +116,13 @@ class Player:   # player object. has a hand, score, bid, tricks, name, card on t
             if card.rank == 14:
                 aces += 1
         self.bid += aces
-        if 5 > hearts > 2 and kh == 1:
+        if 5 > hearts > 1 and kh == 1:
             self.bid += 1
-        if 5 > clubs > 2 and kc == 1:
+        if 5 > clubs > 1 and kc == 1:
             self.bid += 1
-        if 5 > diamonds > 2 and kd == 1:
+        if 5 > diamonds > 1 and kd == 1:
             self.bid += 1
-        if 5 > spades > 2 and ks == 1:
+        if spades > 2 and ks == 1:
             self.bid += 1
         if 5 > hearts > 3 and qh == 1:
             self.bid += 1
@@ -136,13 +137,90 @@ class Player:   # player object. has a hand, score, bid, tricks, name, card on t
         elif (spades - ks - asp - qs) > 3:
             self.bid += (spades-ks-qs-asp-3)
 
-    def playCard(self, trump):  # basically a stub to see if rest of game works.
-        if trump > 0:           # will allow user to play a card and determine which card CPUs play
-            self.cardOnTable = self.hand.pop(len(self.hand))
+    def score(self):  # how score is added up after each hand
+        if (int(self.bid) < int(self.tricks) or int(self.bid) == int(self.tricks)) and (int(self.bid) > 0):
+            self.score += int(self.bid) * 10
+            self.score += int(self.tricks) - int(self.bid)
+            self.bags += int(self.tricks) - int(self.bid)
+        elif int(self.bid) == 0:
+            self.bags += int(self.tricks) - int(self.bid)
+            if self.tricks == 0:
+                self.score += 100
+            else:
+                self.score -= 100
         else:
-            self.cardOnTable = self.hand[0]
-            self.hand.pop(0)
-        self.cardOnTable.dispCard()
+            self.score -= int(self.bid) * 10
+        if self.bags >= 10:
+            self.score -= 100
+            self.bags -= 10
+
+    def playCard(self, table):  # basically a stub to see if rest of game works.
+        self.cardOnTable = self.hand[0]
+        self.hand.pop(0)
+
+
+'''
+AI Pseudocode
+
+ keep track of:
+    played cards
+    for given suit
+    	if spade has been played
+    		trump is broken
+    	if >=8 cards played in suit or someone has played trump on that suit:
+    		assume someone is out of that suit
+    if trump is broken: 
+    	can examine spades
+    do you have high card in a suit: 
+    	is anyone out of that suit:
+    		look at next suit
+    	else:
+    		play high card
+    else:
+    	find suit with fewest cards:
+    		do you have card >= 10?
+    			play lowest of cards >= 10
+    		else:
+    			play low card
+'''
+
+
+class GameData:    # keeps track of game progress
+    def __init__(self):
+        self.cardsOnTable = [] # list of cards on the table
+        self.playedCards = [] # list of cards that have been played
+        self.playedSpades = 0 # how many cards have been played per suit
+        self.playedHearts = 0
+        self.playedDiamonds = 0
+        self.playedClubs = 0
+        self.heartsBroken = 0 # someone is likeley out of suit
+        self.diamondsBroken = 0
+        self.clubsBroken = 0
+        self.trump = 0 # trump is broken
+
+    def getCurrentState(self):
+        for card in self.cardsOnTable:
+            if card.suit == 'Spades':
+                self.trump = 1
+        for card in self.playedCards:
+            if card.suit == 'Spades':
+                self.playedSpades += 1
+                self.trump = 1
+            if card.suit == 'Hearts':
+                self.playedHearts += 1
+            if card.suit == 'Diamonds':
+                self.playedDiamonds += 1
+            if card.suit == 'Clubs':
+                self.playedClubs += 1
+            self.assumeTrump()
+
+    def assumeTrump(self):
+        if self.playedHearts >= 8:
+            self.heartsBroken = 1
+        if self.playedDiamonds >= 8:
+            self.diamondsBroken = 1
+        if self.playedClubs >= 8:
+            self.clubsBroken = 1
 
 
 def build(suits, ranks):    # build deck of cards
@@ -162,20 +240,8 @@ def deal(nPlayers, deck, players):  # deal cards
 
 
 def play(players, deck):  # overall function for playing the game, manages turns, scoring, and maybe other stuff that hasn't been reached yet
+                          # played cards
     pass
-
-
-def score(player):      # how score is added up after each hand
-    if (int(player.bid) < int(player.tricks) or int(player.bid) == int(player.tricks)) and (int(player.bid) > 0):
-        player.score += int(player.bid) * 10
-        player.score += int(player.tricks) - int(player.bid)
-    elif int(player.bid) == 0:
-        if player.tricks == 0:
-            player.score += 100
-        else:
-            player.score -= 100
-    else:
-        player.score -= int(player.bid) * 10
 
 
 deck = build(suits, ranks)      # build deck and players
