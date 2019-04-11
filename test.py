@@ -154,13 +154,13 @@ class Player:   # player object. has a hand, score, bid, tricks, name, card on t
             self.score -= 100
             self.bags -= 10
 
-    def playCard(self, table):  # basically a stub to see if rest of game works.
+    def playCard(self, game):  # basically a stub to see if rest of game works.
         self.cardOnTable = self.hand[0]
         self.hand.pop(0)
 
 
 '''
-AI Pseudocode
+AI notes
 
  keep track of:
     played cards
@@ -182,6 +182,8 @@ AI Pseudocode
     			play lowest of cards >= 10
     		else:
     			play low card
+    
+    trump is assumed broken if lead suit is not played by another player
 '''
 
 
@@ -193,16 +195,13 @@ class GameData:    # keeps track of game progress
         self.playedHearts = 0
         self.playedDiamonds = 0
         self.playedClubs = 0
-        self.heartsBroken = 0 # someone is likeley out of suit
+        self.heartsBroken = 0 # someone is likely out of suit
         self.diamondsBroken = 0
         self.clubsBroken = 0
         self.trump = 0 # trump is broken
 
-    def getCurrentState(self):
+    def getCurrentState(self):  # keeps track of hands played, like a real player, cannot actually see cards that have been played but can remember each hand
         for card in self.cardsOnTable:
-            if card.suit == 'Spades':
-                self.trump = 1
-        for card in self.playedCards:
             if card.suit == 'Spades':
                 self.playedSpades += 1
                 self.trump = 1
@@ -212,6 +211,7 @@ class GameData:    # keeps track of game progress
                 self.playedDiamonds += 1
             if card.suit == 'Clubs':
                 self.playedClubs += 1
+            self.playedCards.append(card)
             self.assumeTrump()
 
     def assumeTrump(self):
@@ -222,6 +222,17 @@ class GameData:    # keeps track of game progress
         if self.playedClubs >= 8:
             self.clubsBroken = 1
 
+    def resetGame(self):
+        self.cardsOnTable = []
+        self.playedCards = []
+        self.playedSpades = 0
+        self.playedHearts = 0
+        self.playedDiamonds = 0
+        self.playedClubs = 0
+        self.heartsBroken = 0
+        self.diamondsBroken = 0
+        self.clubsBroken = 0
+        self.trump = 0
 
 def build(suits, ranks):    # build deck of cards
     temp = list(itertools.product(ranks, suits))
@@ -251,6 +262,7 @@ cpu2 = Player('CPU 2', 2)
 cpu3 = Player('CPU 3', 3)
 players = [player, cpu1, cpu2, cpu3]
 deal(4, deck, players)
+game = GameData()
 for p in players:
     p.sortHand()
     p.printHand()
