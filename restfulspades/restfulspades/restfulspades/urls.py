@@ -24,4 +24,5 @@ urlpatterns = [
     path('', include('cards.urls')),
     path('', include('decks.urls')),
     path('', include('players.urls')),
+    path('', include('play.urls'))
 ]

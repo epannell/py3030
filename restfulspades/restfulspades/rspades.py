@@ -1,6 +1,6 @@
 import random
 import itertools
-
+import json
 
 class Card:     # card object has a rank and a suit
     def __init__(self, rank, suit):
@@ -207,12 +207,12 @@ def score(player):      # how score is added up after each hand
 
 # options = 0     # menu stuff may be more options later
 # while options is not '9':
-#     if options == 0:
-#         intro = open("intro.txt", "r")
-#         for line in intro:
-#             print(line, end='', flush=True)
-#         options = input('\nEnter a number\nMenu:\n1: Play Spades\n2: View Rules\n9: Quit\n\n')
-#         intro.close()
+#     # if options == 0:
+#     #     intro = open("intro.txt", "r")
+#     #     for line in intro:
+#     #         print(line, end='', flush=True)
+#     #     options = input('\nEnter a number\nMenu:\n1: Play Spades\n2: View Rules\n9: Quit\n\n')
+#     #     intro.close()
 #     if options == '1':
 #         suits = ['Spades', 'Hearts', 'Diamonds', 'Clubs']       # seed for deck of cards
 #         ranks = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]

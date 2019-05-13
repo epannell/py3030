@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'cards',
     'decks',
     'players',
+    'play',
 ]
 
 MIDDLEWARE = [

@@ -1,0 +1,15 @@
+<form action="/play/" method="post">
+    {% csrf_token %}
+    {% for player in players %}
+    <ul>{{player.name}}
+        <li>{{ player.hand }}</li>
+        <li>{{ player.score }}</li>
+        <li>{{ player.bid }}</li>
+        <li>{{ player.tricks }}</li>
+        <li>{{ player.cardOnTable }}</li>
+        <li>{{ player.isAI }}</li>
+    </ul>
+    {% endfor %}
+    {{ form }}
+    <input type="submit" value="Submit">
+</form>
