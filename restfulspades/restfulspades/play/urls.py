@@ -2,5 +2,5 @@ from django.urls import path
 from play import views
 
 urlpatterns = [
-    path('play/', views.playGame),
+    path('play/', views.playGame, name='play-game'),
 ]

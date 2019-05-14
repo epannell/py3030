@@ -1,5 +1,6 @@
 from django.db import models
 from rspades import Player as p
+import json
 
 
 class Player(models.Model):
@@ -14,6 +15,14 @@ class Player(models.Model):
     isAI = models.BooleanField(default=True)
 
     def bet(self):  # betting. first part of each hand, may need corrections
+        # Parse the JSON string that is the list of card objects into a regular list
+        decodedList = json.loads(self.hand)
+
+        # Unfortunately the strings in that list also need to be parsed from JSON to dicts of {suit:, rank:}.
+        decodedHand = []
+        for item in decodedList:
+            decodedHand.append(json.loads(item))
+
         spades = 0
         hearts = 0
         clubs = 0
@@ -22,34 +31,34 @@ class Player(models.Model):
         kc, kd, kh, ks = 0, 0, 0, 0
         qc, qd, qh, qs = 0, 0, 0, 0
         asp = 0
-        for card in self.hand:
-            if card.suit == 'Spades':
+        for card in decodedHand:
+            if card['Suit'] == 'Spades':
                 spades += 1
-            if card.suit == 'Clubs':
+            if card['Suit'] == 'Clubs':
                 clubs += 1
-            if card.suit == 'Hearts':
+            if card['Suit'] == 'Hearts':
                 hearts += 1
-            if card.suit == 'Diamonds':
+            if card['Suit'] == 'Diamonds':
                 diamonds += 1
-            if card.eq(13, 'Clubs'):
+            if card['Suit'] == 'Clubs' and card['Rank'] == 13: #card.eq(13, 'Clubs'):
                 kc = 1
-            if card.eq(13, 'Diamonds'):
+            if card['Suit'] == 'Diamonds' and card['Rank'] == 13:
                 kd = 1
-            if card.eq(13, 'Hearts'):
+            if card['Suit'] == 'Hearts' and card['Rank'] == 13:
                 kh = 1
-            if card.eq(13, 'Spades'):
+            if card['Suit'] == 'Spades' and card['Rank'] == 13:
                 ks = 1
-            if card.eq(12, 'Clubs'):
+            if card['Suit'] == 'Clubs' and card['Rank'] == 12:
                 qc = 1
-            if card.eq(12, 'Diamonds'):
+            if card['Suit'] == 'Diamonds' and card['Rank'] == 12:
                 qd = 1
-            if card.eq(12, 'Hearts'):
+            if card['Suit'] == 'Hearts' and card['Rank'] == 12:
                 qh = 1
-            if card.eq(12, 'Spades'):
+            if card['Suit'] == 'Spades' and card['Rank'] == 12:
                 qs = 1
-            if card.eq(14, 'Spades'):
+            if card['Suit'] == 'Spades' and card['Rank'] == 14:
                 asp = 1
-            if card.rank == 14:
+            if card['Rank'] == 14:
                 aces += 1
         self.bid += aces
         if 5 > hearts > 2 and kh == 1:

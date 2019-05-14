@@ -1,5 +1,6 @@
 from django.db import models
 from cards.models import Card
+from players.models import Player
 import json
 import itertools
 import random
@@ -17,6 +18,18 @@ class Deck(models.Model):
         cardList = []
 
         for card in deck:
-            cardList.append({str(card.suit), int(card.rank)})
+            cardList.append({"Suit": str(card.suit), "Rank": int(card.rank)})
 
         self.cards = json.dumps(cardList)
+
+    def deal(self, players):
+        decodedDeck = json.loads(self.cards)
+        hands = [[] for x in range(4)]
+        count = 0
+        while count < 52:
+            for p in players:
+                cardObject = json.dumps(decodedDeck.pop(0))
+                hands[p.turnOrder].append(cardObject)
+                count += 1
+        for player in players:
+            player.hand = json.dumps(hands[player.turnOrder])
